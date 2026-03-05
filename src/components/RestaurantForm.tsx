@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import { Box, Button, Typography, Alert, Paper } from '@mui/material';
 import { useRouter } from 'next/navigation';
-import { api } from '@/lib/api';
+import { api, ApiError } from '@/lib/api';
 import FormTextField from './FormTextField';
 
 interface RestaurantData {
@@ -54,9 +54,9 @@ export default function RestaurantForm({
       }
       router.push('/my-restaurants');
     } catch (err: unknown) {
-      const apiErr = err as { message?: string; errors?: Record<string, string[]> };
-      setError(apiErr.message || 'Failed to save restaurant');
-      if (apiErr.errors) setFieldErrors(apiErr.errors);
+      
+      setError(err instanceof ApiError ? err.message : 'Failed to save restaurant');
+      if (err instanceof ApiError && err.errors) setFieldErrors(err.errors);
     } finally {
       setLoading(false);
     }

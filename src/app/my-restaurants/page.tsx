@@ -6,7 +6,7 @@ import {
 } from '@mui/material';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { api } from '@/lib/api';
+import { api, ApiError } from '@/lib/api';
 import { useAuth } from '@/context/AuthContext';
 
 interface Restaurant {
@@ -35,8 +35,8 @@ export default function MyRestaurantsPage() {
       const data = await api.restaurants.list({ ownedByMe: true });
       setRestaurants(data.items);
     } catch (err: unknown) {
-      const apiErr = err as { message?: string };
-      setError(apiErr.message || 'Failed to load restaurants');
+      
+      setError(err instanceof ApiError ? err.message : 'Failed to load restaurants');
     } finally {
       setLoading(false);
     }
@@ -52,8 +52,8 @@ export default function MyRestaurantsPage() {
       await api.restaurants.delete(id);
       fetchRestaurants();
     } catch (err: unknown) {
-      const apiErr = err as { message?: string };
-      alert(apiErr.message || 'Failed to delete restaurant');
+      
+      alert(err instanceof ApiError ? err.message : 'Failed to delete restaurant');
     }
   };
 
@@ -99,7 +99,7 @@ export default function MyRestaurantsPage() {
                   <Chip label={r.cuisine} size="small" sx={{ mt: 1 }} />
                   <Box sx={{ mt: 1, display: 'flex', alignItems: 'center', gap: 1 }}>
                     <Rating value={r.averageRating} readOnly precision={0.1} size="small" />
-                    <Typography variant="body2">({r.averageRating?.toFixed(1)})</Typography>
+                    <Typography variant="body2">({r.averageRating.toFixed(1)})</Typography>
                   </Box>
                 </CardContent>
                 <CardActions>

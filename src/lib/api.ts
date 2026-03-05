@@ -1,5 +1,16 @@
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
 
+export class ApiError extends Error {
+  errors?: Record<string, string[]>;
+  status?: number;
+  constructor(message: string, errors?: Record<string, string[]>, status?: number) {
+    super(message);
+    this.name = 'ApiError';
+    this.errors = errors;
+    this.status = status;
+  }
+}
+
 function getToken() {
   if (typeof window !== 'undefined') return localStorage.getItem('token');
   return null;
@@ -12,7 +23,7 @@ async function request(path: string, options: RequestInit = {}) {
   const res = await fetch(`${BASE_URL}${path}`, { ...options, headers: { ...headers, ...(options.headers || {}) } });
   if (res.status === 204) return null;
   const data = await res.json();
-  if (data.status === 'error') throw { message: data.message, errors: data.errors, status: res.status };
+  if (data.status === 'error') throw new ApiError(data.message, data.errors, res.status);
   return data.data;
 }
 

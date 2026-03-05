@@ -6,7 +6,7 @@ import {
 } from '@mui/material';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { api } from '@/lib/api';
+import { api, ApiError } from '@/lib/api';
 import { useAuth } from '@/context/AuthContext';
 import FormTextField from '@/components/FormTextField';
 
@@ -32,9 +32,9 @@ export default function RegisterPage() {
       if (data.user.role === 'Owner') router.push('/my-restaurants');
       else router.push('/restaurants');
     } catch (err: unknown) {
-      const apiErr = err as { message?: string; errors?: Record<string, string[]> };
-      setError(apiErr.message || 'Registration failed');
-      if (apiErr.errors) setFieldErrors(apiErr.errors);
+      
+      setError(err instanceof ApiError ? err.message : 'Registration failed');
+      if (err instanceof ApiError && err.errors) setFieldErrors(err.errors);
     } finally {
       setLoading(false);
     }

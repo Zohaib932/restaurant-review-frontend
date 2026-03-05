@@ -5,7 +5,7 @@ import {
   FormControl, InputLabel, ToggleButton, ToggleButtonGroup, Pagination,
   CircularProgress, Alert,
 } from '@mui/material';
-import { api } from '@/lib/api';
+import { api, ApiError } from '@/lib/api';
 import { useAuth } from '@/context/AuthContext';
 import RestaurantCard from '@/components/RestaurantCard';
 import { useRouter } from 'next/navigation';
@@ -70,8 +70,8 @@ export default function RestaurantsPage() {
       setRestaurants(data.items);
       setMeta(data.meta);
     } catch (err: unknown) {
-      const apiErr = err as { message?: string };
-      setError(apiErr.message || 'Failed to load restaurants');
+      
+      setError(err instanceof ApiError ? err.message : 'Failed to load restaurants');
     } finally {
       setLoading(false);
     }

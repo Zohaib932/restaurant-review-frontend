@@ -5,7 +5,7 @@ import {
   Container, Typography, Box, Chip, Rating, Divider, CircularProgress,
   Alert, Button, TextField, Paper,
 } from '@mui/material';
-import { api } from '@/lib/api';
+import { api, ApiError } from '@/lib/api';
 import { useAuth } from '@/context/AuthContext';
 import ReviewCard from '@/components/ReviewCard';
 
@@ -50,8 +50,8 @@ export default function RestaurantDetailPage() {
       const data = await api.restaurants.get(id);
       setRestaurant(data);
     } catch (err: unknown) {
-      const apiErr = err as { message?: string };
-      setError(apiErr.message || 'Failed to load restaurant');
+      
+      setError(err instanceof ApiError ? err.message : 'Failed to load restaurant');
     } finally {
       setLoading(false);
     }
@@ -72,8 +72,8 @@ export default function RestaurantDetailPage() {
       setReviewComment('');
       fetchRestaurant();
     } catch (err: unknown) {
-      const apiErr = err as { message?: string };
-      setReviewError(apiErr.message || 'Failed to submit review');
+      
+      setReviewError(err instanceof ApiError ? err.message : 'Failed to submit review');
     } finally {
       setReviewLoading(false);
     }
@@ -84,8 +84,8 @@ export default function RestaurantDetailPage() {
       await api.reviews.delete(id, reviewId);
       fetchRestaurant();
     } catch (err: unknown) {
-      const apiErr = err as { message?: string };
-      alert(apiErr.message || 'Failed to delete review');
+      
+      alert(err instanceof ApiError ? err.message : 'Failed to delete review');
     }
   };
 
@@ -119,7 +119,7 @@ export default function RestaurantDetailPage() {
         {restaurant.averageRating !== null && (
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
             <Rating value={restaurant.averageRating} readOnly precision={0.1} />
-            <Typography>({restaurant.averageRating?.toFixed(1)})</Typography>
+            <Typography>({restaurant.averageRating.toFixed(1)})</Typography>
           </Box>
         )}
       </Box>

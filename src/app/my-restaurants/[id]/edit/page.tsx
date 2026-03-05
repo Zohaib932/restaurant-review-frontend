@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { Container, CircularProgress, Box, Alert } from '@mui/material';
 import { useAuth } from '@/context/AuthContext';
-import { api } from '@/lib/api';
+import { api, ApiError } from '@/lib/api';
 import RestaurantForm from '@/components/RestaurantForm';
 
 interface RestaurantData {
@@ -31,8 +31,8 @@ export default function EditRestaurantPage() {
       api.restaurants.get(id)
         .then(data => { setRestaurant(data); setLoading(false); })
         .catch(err => {
-          const apiErr = err as { message?: string };
-          setError(apiErr.message || 'Failed to load');
+          
+          setError(err instanceof ApiError ? err.message : 'Failed to load');
           setLoading(false);
         });
     }
