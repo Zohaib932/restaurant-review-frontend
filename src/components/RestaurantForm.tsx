@@ -33,6 +33,17 @@ export default function RestaurantForm({
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+    if (!file.type.startsWith('image/')) {
+      setError('Please select a valid image file.');
+      e.target.value = '';
+      return;
+    }
+    if (file.size > 10 * 1024 * 1024) {
+      setError('Image must be smaller than 10 MB.');
+      e.target.value = '';
+      return;
+    }
+    setError('');
     const reader = new FileReader();
     reader.onloadend = () => setPreviewImage(reader.result as string);
     reader.readAsDataURL(file);
