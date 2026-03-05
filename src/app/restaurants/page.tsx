@@ -43,7 +43,6 @@ export default function RestaurantsPage() {
 
   useEffect(() => {
     if (!authLoading && !user) router.push('/login');
-    if (!authLoading && user?.role === 'Owner') router.push('/my-restaurants');
   }, [user, authLoading, router]);
 
   useEffect(() => {

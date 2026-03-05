@@ -24,8 +24,7 @@ export default function LoginPage() {
     try {
       const data = await api.auth.login({ email, password });
       login(data.user, data.token);
-      if (data.user.role === 'Owner') router.push('/my-restaurants');
-      else router.push('/restaurants');
+      router.push('/restaurants');
     } catch (err: unknown) {
       
       setError(err instanceof ApiError ? err.message : 'Login failed');

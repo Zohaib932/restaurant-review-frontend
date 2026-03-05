@@ -28,14 +28,12 @@ export default function Navbar() {
           {user ? (
             <>
               <Typography variant="body2">{user.name} ({user.role})</Typography>
+              <Button color="inherit" component={Link} href="/restaurants">
+                Restaurants
+              </Button>
               {user.role === 'Owner' && (
                 <Button color="inherit" component={Link} href="/my-restaurants">
                   My Restaurants
-                </Button>
-              )}
-              {user.role === 'Reviewer' && (
-                <Button color="inherit" component={Link} href="/restaurants">
-                  Restaurants
                 </Button>
               )}
               <Button color="inherit" onClick={handleLogout}>Logout</Button>
