@@ -21,7 +21,7 @@ export default function RegisterPage() {
   const { login } = useAuth();
   const router = useRouter();
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: any) => {
     e.preventDefault();
     setError('');
     setFieldErrors({});
@@ -32,7 +32,7 @@ export default function RegisterPage() {
       if (data.user.role === 'Owner') router.push('/my-restaurants');
       else router.push('/restaurants');
     } catch (err: unknown) {
-      
+
       setError(err instanceof ApiError ? err.message : 'Registration failed');
       if (err instanceof ApiError && err.errors) setFieldErrors(err.errors);
     } finally {

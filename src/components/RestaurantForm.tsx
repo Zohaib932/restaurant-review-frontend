@@ -1,6 +1,6 @@
 'use client';
 import { useState } from 'react';
-import { Box, Button, Typography, Alert, Paper } from '@mui/material';
+import { Box, Button, Typography, Alert, Paper, FormHelperText } from '@mui/material';
 import { useRouter } from 'next/navigation';
 import { api, ApiError } from '@/lib/api';
 import FormTextField from './FormTextField';
@@ -49,7 +49,7 @@ export default function RestaurantForm({
     reader.readAsDataURL(file);
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: any) => {
     e.preventDefault();
     setError('');
     setFieldErrors({});
@@ -65,9 +65,12 @@ export default function RestaurantForm({
       }
       router.push('/my-restaurants');
     } catch (err: unknown) {
-      
+
       setError(err instanceof ApiError ? err.message : 'Failed to save restaurant');
-      if (err instanceof ApiError && err.errors) setFieldErrors(err.errors);
+      if (err instanceof ApiError && err.errors) {
+        setFieldErrors(err.errors);
+        console.log('field errors are:', err.errors);
+      }
     } finally {
       setLoading(false);
     }
@@ -114,8 +117,11 @@ export default function RestaurantForm({
           inputProps={{ maxLength: 1000 }}
         />
         <Box sx={{ mt: 2 }}>
-          <Typography variant="body2" mb={1}>Preview Image (optional)</Typography>
+          <Typography variant="body2" mb={1}>Preview Image</Typography>
           <input type="file" accept="image/*" onChange={handleImageChange} />
+          {fieldErrors.previewImage && (
+            <FormHelperText>{fieldErrors.previewImage.join(', ')}</FormHelperText>
+          )}
           {previewImage && (
             <Box
               component="img"

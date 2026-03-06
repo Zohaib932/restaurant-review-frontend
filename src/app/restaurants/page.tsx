@@ -39,13 +39,11 @@ export default function RestaurantsPage() {
   const [sortBy, setSortBy] = useState('averageRating');
   const [sortOrder, setSortOrder] = useState('desc');
   const [page, setPage] = useState(1);
+  const [cuisines, setCuisines] = useState<string[]>([]);
   const [prefsLoaded, setPrefsLoaded] = useState(false);
 
   useEffect(() => {
     if (!authLoading && !user) router.push('/login');
-  }, [user, authLoading, router]);
-
-  useEffect(() => {
     if (user) {
       api.preferences.get()
         .then(prefs => {
@@ -54,14 +52,17 @@ export default function RestaurantsPage() {
           setPrefsLoaded(true);
         })
         .catch(() => setPrefsLoaded(true));
+      api.restaurants.cuisines()
+        .then(data => setCuisines(data))
+        .catch(() => { });
     }
-  }, [user]);
+  }, [user, authLoading, router]);
 
   const fetchRestaurants = useCallback(async () => {
     setLoading(true);
     setError('');
     try {
-      const params: Record<string, string | number> = { page, limit: 10, sortBy, sortOrder };
+      const params: Record<string, string | number> = { page, limit: 6, sortBy, sortOrder };
       if (search) params.search = search;
       if (cuisine) params.cuisine = cuisine;
       if (minRating) params.minRating = Number(minRating);
@@ -69,7 +70,7 @@ export default function RestaurantsPage() {
       setRestaurants(data.items);
       setMeta(data.meta);
     } catch (err: unknown) {
-      
+
       setError(err instanceof ApiError ? err.message : 'Failed to load restaurants');
     } finally {
       setLoading(false);
@@ -84,13 +85,13 @@ export default function RestaurantsPage() {
     if (!newOrder) return;
     setSortOrder(newOrder);
     setPage(1);
-    try { await api.preferences.update({ sortBy, sortOrder: newOrder }); } catch { /* ignore */ }
+    try { await api.preferences.update({ sortBy, sortOrder: newOrder }); } catch { }
   };
 
   const handleSortByChange = async (newSortBy: string) => {
     setSortBy(newSortBy);
     setPage(1);
-    try { await api.preferences.update({ sortBy: newSortBy, sortOrder }); } catch { /* ignore */ }
+    try { await api.preferences.update({ sortBy: newSortBy, sortOrder }); } catch { }
   };
 
   if (authLoading) {
@@ -112,16 +113,20 @@ export default function RestaurantsPage() {
           onChange={e => { setSearch(e.target.value); setPage(1); }}
           size="small"
         />
-        <TextField
-          label="Cuisine"
-          value={cuisine}
-          onChange={e => { setCuisine(e.target.value); setPage(1); }}
-          size="small"
-        />
-        <FormControl size="small" sx={{ minWidth: 120 }}>
+        <FormControl size="small" sx={{ minWidth: 150 }}>
+          <InputLabel>Cuisine</InputLabel>
+          <Select value={cuisine} label="Cuisine"
+            onChange={e => { setCuisine(e.target.value); setPage(1); }}>
+            <MenuItem value="All">All</MenuItem>
+            {cuisines.map(c => (
+              <MenuItem key={c} value={c}>{c}</MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+        <FormControl size="small" sx={{ minWidth: 150 }}>
           <InputLabel>Min Rating</InputLabel>
           <Select value={minRating} label="Min Rating" onChange={e => { setMinRating(e.target.value); setPage(1); }}>
-            <MenuItem value="">Any</MenuItem>
+            <MenuItem value='0' >Any</MenuItem>
             {[1, 2, 3, 4, 5].map(r => (
               <MenuItem key={r} value={r}>{r}+ Stars</MenuItem>
             ))}
@@ -131,9 +136,6 @@ export default function RestaurantsPage() {
           <InputLabel>Sort By</InputLabel>
           <Select value={sortBy} label="Sort By" onChange={e => handleSortByChange(e.target.value)}>
             <MenuItem value="averageRating">Rating</MenuItem>
-            <MenuItem value="createdAt">Date Added</MenuItem>
-            <MenuItem value="title">Name</MenuItem>
-            <MenuItem value="cuisine">Cuisine</MenuItem>
           </Select>
         </FormControl>
         <ToggleButtonGroup

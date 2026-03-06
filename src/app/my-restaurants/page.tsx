@@ -35,7 +35,7 @@ export default function MyRestaurantsPage() {
       const data = await api.restaurants.list({ ownedByMe: true });
       setRestaurants(data.items);
     } catch (err: unknown) {
-      
+
       setError(err instanceof ApiError ? err.message : 'Failed to load restaurants');
     } finally {
       setLoading(false);
@@ -52,7 +52,7 @@ export default function MyRestaurantsPage() {
       await api.restaurants.delete(id);
       fetchRestaurants();
     } catch (err: unknown) {
-      
+
       alert(err instanceof ApiError ? err.message : 'Failed to delete restaurant');
     }
   };
@@ -91,7 +91,8 @@ export default function MyRestaurantsPage() {
                     src={r.previewImage}
                     alt={r.title}
                     sx={{ width: '100%', height: 160, objectFit: 'cover' }}
-                  />
+                  >
+                  </Box>
                 )}
                 <CardContent sx={{ flexGrow: 1 }}>
                   <Typography variant="h6">{r.title}</Typography>
@@ -114,6 +115,7 @@ export default function MyRestaurantsPage() {
                   </Button>
                 </CardActions>
               </Card>
+
             </Grid>
           ))}
         </Grid>

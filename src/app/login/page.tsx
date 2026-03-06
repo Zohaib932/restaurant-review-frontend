@@ -16,7 +16,7 @@ export default function LoginPage() {
   const { login } = useAuth();
   const router = useRouter();
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.SubmitEvent) => {
     e.preventDefault();
     setError('');
     setFieldErrors({});
@@ -26,7 +26,7 @@ export default function LoginPage() {
       login(data.user, data.token);
       router.push('/restaurants');
     } catch (err: unknown) {
-      
+
       setError(err instanceof ApiError ? err.message : 'Login failed');
       if (err instanceof ApiError && err.errors) setFieldErrors(err.errors);
     } finally {

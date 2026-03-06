@@ -32,7 +32,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setToken(storedToken);
         setUser(parsedUser);
       } catch (error) {
-        // If stored data is corrupted or invalid, clear it so the app can recover gracefully
         localStorage.removeItem('token');
         localStorage.removeItem('user');
         setToken(null);

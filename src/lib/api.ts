@@ -38,10 +38,10 @@ export const api = {
     list: (params?: Record<string, string | number | boolean>) => {
       const q = params
         ? '?' + new URLSearchParams(
-            Object.entries(params)
-              .filter(([, v]) => v !== undefined && v !== '')
-              .map(([k, v]) => [k, String(v)])
-          ).toString()
+          Object.entries(params)
+            .filter(([, v]) => v !== undefined && v !== '')
+            .map(([k, v]) => [k, String(v)])
+        ).toString()
         : '';
       return request(`/restaurants${q}`);
     },
@@ -49,6 +49,7 @@ export const api = {
     create: (body: object) => request('/restaurants', { method: 'POST', body: JSON.stringify(body) }),
     update: (id: string, body: object) => request(`/restaurants/${id}`, { method: 'PUT', body: JSON.stringify(body) }),
     delete: (id: string) => request(`/restaurants/${id}`, { method: 'DELETE' }),
+    cuisines: () => request('/restaurants/cuisines'),
   },
   reviews: {
     create: (restaurantId: string, body: { rating: number; comment: string }) =>

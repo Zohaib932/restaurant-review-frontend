@@ -50,7 +50,7 @@ export default function RestaurantDetailPage() {
       const data = await api.restaurants.get(id);
       setRestaurant(data);
     } catch (err: unknown) {
-      
+
       setError(err instanceof ApiError ? err.message : 'Failed to load restaurant');
     } finally {
       setLoading(false);
@@ -61,7 +61,7 @@ export default function RestaurantDetailPage() {
     if (id) fetchRestaurant();
   }, [id, fetchRestaurant]);
 
-  const handleReviewSubmit = async (e: React.FormEvent) => {
+  const handleReviewSubmit = async (e: any) => {
     e.preventDefault();
     if (!reviewRating) { setReviewError('Please select a rating'); return; }
     setReviewLoading(true);
@@ -72,22 +72,14 @@ export default function RestaurantDetailPage() {
       setReviewComment('');
       fetchRestaurant();
     } catch (err: unknown) {
-      
+
       setReviewError(err instanceof ApiError ? err.message : 'Failed to submit review');
     } finally {
       setReviewLoading(false);
     }
   };
 
-  const handleDeleteReview = async (reviewId: string) => {
-    try {
-      await api.reviews.delete(id, reviewId);
-      fetchRestaurant();
-    } catch (err: unknown) {
-      
-      alert(err instanceof ApiError ? err.message : 'Failed to delete review');
-    }
-  };
+
 
   if (loading || authLoading) {
     return (
@@ -172,8 +164,6 @@ export default function RestaurantDetailPage() {
         <ReviewCard
           key={review.id}
           review={review}
-          canDelete={user?.id === review.reviewer.id}
-          onDelete={handleDeleteReview}
         />
       ))}
     </Container>
